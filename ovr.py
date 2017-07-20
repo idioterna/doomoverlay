@@ -94,7 +94,7 @@ class OVR:
                 altgain = self._cubic(altgains, mu),
                 )
 
-def main(video_filename, fit_filename, output_filename, fit_offset=0, duration=0, strain=150):
+def main(video_filename, fit_filename, output_filename, fit_offset=0, duration=0, strain=150, bitrate='34000000'):
     v = VideoFileClip(video_filename)
     f = FitFile(fit_filename)
 
@@ -121,7 +121,7 @@ def main(video_filename, fit_filename, output_filename, fit_offset=0, duration=0
         nv = v.subclip(t_end=duration).fl_image(ovr)
     else:
         nv = v.fl_image(ovr)
-    nv.write_videofile(output_filename, progress_bar=True, bitrate='34000000')
+    nv.write_videofile(output_filename, progress_bar=True, bitrate=bitrate)
 
 if __name__ == '__main__':
     import sys, os
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         fit = os.path.realpath(sys.argv[2])
         outvideo = os.path.dirname(video) + '/ovr_' + os.path.basename(video)
     except IndexError:
-        print('Usage: {} <videofile> <fitfile> [--fit-start seconds_after_video_start] [--duration seconds_to_encode] [--output videofile.mp4]'.format(sys.argv[0]))
+        print('Usage: {} <videofile> <fitfile> [--fit-start seconds_after_video_start] [--duration seconds_to_encode] [--output videofile.mp4] [--strain beats_per_minute] [--bitrate bits_per_second]'.format(sys.argv[0]))
         sys.exit(1)
 
     if '--output' in sys.argv:
@@ -151,5 +151,10 @@ if __name__ == '__main__':
     else:
         strain = 150
 
-    main(video, fit, outvideo, offset, duration, strain)
+    if '--bitrate' in sys.argv:
+        bitrate = sys.argv[sys.argv.index('--bitrate')+1]
+    else:
+        bitrate = '34000000' # close to what gopro does with my settings
+
+    main(video, fit, outvideo, offset, duration, strain, bitrate)
 
