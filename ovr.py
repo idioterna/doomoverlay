@@ -114,7 +114,7 @@ if __name__ == '__main__':
     try:
         video = os.path.realpath(sys.argv[1])
         fit = os.path.realpath(sys.argv[2])
-	outvideo = os.path.dirname(video) + '/ovr_' + os.path.basename(video)
+        outvideo = os.path.dirname(video) + '/ovr_' + os.path.basename(video)
     except IndexError:
         print('Usage: {} <videofile> <fitfile> [--fit-start seconds_after_video_start] [--duration seconds_to_encode] [--output videofile.mp4]'.format(sys.argv[0]))
         sys.exit(1)
