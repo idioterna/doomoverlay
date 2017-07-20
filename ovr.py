@@ -132,5 +132,5 @@ if __name__ == '__main__':
     else:
         duration = 0
 
-    main(video, fit, offset, duration)
+    main(video, fit, outvideo, offset, duration)
 
