@@ -83,7 +83,7 @@ class OVR:
                 altgain = self._cubic(altgains, mu),
                 )
 
-def main(video_filename, fit_filename, fit_offset=0, duration=0):
+def main(video_filename, fit_filename, output_filename, fit_offset=0, duration=0):
     v = VideoFileClip(video_filename)
     f = FitFile(fit_filename)
 
@@ -107,16 +107,20 @@ def main(video_filename, fit_filename, fit_offset=0, duration=0):
         nv = v.subclip(t_end=duration).fl_image(ovr)
     else:
         nv = v.fl_image(ovr)
-    nv.write_videofile("ovr_" + video_filename, progress_bar=True, bitrate='34000000')
+    nv.write_videofile(output_filename, progress_bar=True, bitrate='34000000')
 
 if __name__ == '__main__':
-    import sys
+    import sys, os
     try:
-        video = sys.argv[1]
-        fit = sys.argv[2]
+        video = os.path.realpath(sys.argv[1])
+        fit = os.path.realpath(sys.argv[2])
+	outvideo = os.path.dirname(video) + '/ovr_' + os.path.basename(video)
     except IndexError:
-        print('Usage: {} <videofile> <fitfile> [--fit-start seconds_after_video_start] [--duration seconds_to_encode]'.format(sys.argv[0]))
+        print('Usage: {} <videofile> <fitfile> [--fit-start seconds_after_video_start] [--duration seconds_to_encode] [--output videofile.mp4]'.format(sys.argv[0]))
         sys.exit(1)
+
+    if '--output' in sys.argv:
+        outvideo = sys.argv[sys.argv.index('--output')+1]
 
     if '--fit-start' in sys.argv:
         offset = int(sys.argv[sys.argv.index('--fit-start')+1])
