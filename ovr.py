@@ -10,11 +10,12 @@ import doom
 
 class OVR:
 
-    def __init__(self, vid=None, fit=None, fit_offset=0):
+    def __init__(self, vid=None, fit=None, fit_offset=0, strain=150):
         self.fit = fit
         self.lfit = len(fit)
         self.vid = vid
         self.fit_offset = fit_offset
+        self.strain = strain
         self.framedur = 1.0/self.vid.fps
         self.frameno = 0
 
@@ -28,7 +29,7 @@ class OVR:
         elif fit_index >= self.lfit:
             fit_index = self.lfit - 1
         img = Image.fromarray(frame)
-        img.paste(doom.generate(self._interpolate(self.fit, self.lfit, fit_index, currentts - currenttsfloor)), (0, 888))
+        img.paste(doom.generate(self._interpolate(self.fit, self.lfit, fit_index, currentts - currenttsfloor), self.strain), (0, 888))
         return np.asarray(img, dtype=np.uint8)
 
     def _cubic(self, y, mu=0.5):
@@ -93,7 +94,7 @@ class OVR:
                 altgain = self._cubic(altgains, mu),
                 )
 
-def main(video_filename, fit_filename, output_filename, fit_offset=0, duration=0):
+def main(video_filename, fit_filename, output_filename, fit_offset=0, duration=0, strain=150):
     v = VideoFileClip(video_filename)
     f = FitFile(fit_filename)
 
@@ -115,7 +116,7 @@ def main(video_filename, fit_filename, output_filename, fit_offset=0, duration=0
                 altgain += gain
             fit[-1]['altgain'] = altgain
 
-    ovr = OVR(v, fit, fit_offset)
+    ovr = OVR(v, fit, fit_offset, strain)
     if duration:
         nv = v.subclip(t_end=duration).fl_image(ovr)
     else:
@@ -145,5 +146,10 @@ if __name__ == '__main__':
     else:
         duration = 0
 
-    main(video, fit, outvideo, offset, duration)
+    if '--strain' in sys.argv:
+        strain = int(sys.argv[sys.argv.index('--strain')+1])
+    else:
+        strain = 150
+
+    main(video, fit, outvideo, offset, duration, strain)
 

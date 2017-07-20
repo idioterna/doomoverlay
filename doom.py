@@ -51,7 +51,7 @@ def decimal(dst, src, x, y, num):
     else:
         dst.paste(src, (x-src.size[0], y), src)
 
-def generate(data):
+def generate(data, strain=150):
     bar = ba.copy()
 
     # speed
@@ -63,7 +63,7 @@ def generate(data):
     hr = data.get('heartrate', 0)
     hrd = bignum(hr)
     center(bar, hrd, 136, 24)
-    if hr >= 150:
+    if hr >= strain:
         center(bar, bh, 1005, 12)
     else:
         center(bar, be, 1005, 12)
