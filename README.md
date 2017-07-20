@@ -8,7 +8,7 @@ travelled and elevation gained.
 
 Usage is fairly straightforward:
 
-`$ ./ovr.py video.mp4 yyyy-mm-dd-hh-mm-ss.fit \
+`$ ./ovr.py video.mp4 yyyy-mm-dd-hh-mm-ss.fit
 --output out.mp4 --fit-start 3 --duration 60 --strain 150`
 
 The `--fit-start 3` parameter allows you to synchronize start of ride
