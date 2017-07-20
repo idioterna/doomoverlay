@@ -40,6 +40,16 @@ class OVR:
 
        return a0*mu*mu2+a1*mu2+a2*mu+a3;
 
+    def _lastvalid(self, data, i, key, default=0):
+        cnt = 0
+        while True:
+            cnt+=1
+            if i-cnt < 1:
+                return default
+            value = data[i-cnt].get(key, None)
+            if value is not None:
+                return value
+
     def _interpolate(self, data, datalen, i, mu):
         offsets = [-1, 0, 1, 2]
         if i < 1:
@@ -58,15 +68,15 @@ class OVR:
         for o in offsets:
             timestamps.append(data[i+o]['timestamp'].timestamp())
         for o in offsets:
-            distances.append(float(data[i+o]['distance']))
+            distances.append(float(data[i+o].get('distance', self._lastvalid(data, i+o, 'distance', 0))))
         for o in offsets:
-            altitudes.append(float(data[i+o]['altitude']))
+            altitudes.append(float(data[i+o].get('altitude', self._lastvalid(data, i+o, 'altitude', 0))))
         for o in offsets:
-            temperatures.append(float(data[i+o]['temperature']))
+            temperatures.append(float(data[i+o].get('temperature', 0)))
         for o in offsets:
-            speeds.append(float(data[i+o]['speed'])*3.6)
+            speeds.append(float(data[i+o].get('speed', 0))*3.6)
         for o in offsets:
-            heartrates.append(float(data[i+o]['heart_rate']))
+            heartrates.append(float(data[i+o].get('heart_rate', 0)))
         for o in offsets:
             cadences.append(float(data[i+o].get('cadence', 0)))
         for o in offsets:
@@ -97,7 +107,10 @@ def main(video_filename, fit_filename, output_filename, fit_offset=0, duration=0
         fit.append(d)
         lfit += 1
         if lfit > 1:
-            gain = fit[-1].get('altitude') - fit[-2].get('altitude')
+            try:
+                gain = fit[-1].get('altitude') - fit[-2].get('altitude')
+            except:
+                gain = 0
             if gain > 0:
                 altgain += gain
             fit[-1]['altgain'] = altgain
